@@ -3,7 +3,7 @@ const Joi = require('joi');
 const validate = (schema) => {
   return (req, res, next) => {
     const { error } = schema.validate(req.body);
-    
+
     if (error) {
       const errorMessage = error.details[0].message;
       return res.status(400).json({
@@ -12,7 +12,7 @@ const validate = (schema) => {
         error: errorMessage
       });
     }
-    
+
     next();
   };
 };
@@ -23,7 +23,7 @@ const schemas = {
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required()
   }),
-  
+
   register: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
@@ -33,7 +33,7 @@ const schemas = {
     role: Joi.string().valid('admin', 'front_desk', 'housekeeping', 'management', 'finance', 'staff').default('staff'),
     department: Joi.string().optional()
   }),
-  
+
   // Guest schemas
   createGuest: Joi.object({
     firstName: Joi.string().min(1).max(100).required(),
@@ -68,7 +68,7 @@ const schemas = {
     travelAgent: Joi.string().optional(),
     notes: Joi.string().optional()
   }),
-  
+
   updateGuest: Joi.object({
     firstName: Joi.string().min(1).max(100).optional(),
     lastName: Joi.string().min(1).max(100).optional(),
@@ -102,7 +102,7 @@ const schemas = {
     travelAgent: Joi.string().optional(),
     notes: Joi.string().optional()
   }),
-  
+
   // Reservation schemas
   createReservation: Joi.object({
     guestId: Joi.string().uuid().required(),
@@ -111,9 +111,9 @@ const schemas = {
     checkOutDate: Joi.date().iso().min(Joi.ref('checkInDate')).required(),
     adults: Joi.number().integer().min(1).max(10).default(1),
     children: Joi.number().integer().min(0).max(10).default(0),
-    roomRate: Joi.number().decimal().min(0).required(),
-    totalAmount: Joi.number().decimal().min(0).required(),
-    deposit: Joi.number().decimal().min(0).default(0),
+    roomRate: Joi.number().min(0).required(),
+    totalAmount: Joi.number().min(0).required(),
+    deposit: Joi.number().min(0).default(0),
     bookingSource: Joi.string().valid('direct', 'website', 'phone', 'email', 'booking_com', 'expedia', 'ota', 'travel_agent', 'corporate', 'walk_in').default('direct'),
     bookingChannel: Joi.string().optional(),
     specialRequests: Joi.array().items(Joi.string()).optional(),
@@ -121,22 +121,22 @@ const schemas = {
     guaranteed: Joi.boolean().default(false),
     guaranteeType: Joi.string().valid('credit_card', 'deposit', 'corporate', 'travel_agent').optional()
   }),
-  
+
   updateReservation: Joi.object({
     roomId: Joi.string().uuid().optional(),
     checkInDate: Joi.date().iso().optional(),
     checkOutDate: Joi.date().iso().optional(),
     adults: Joi.number().integer().min(1).max(10).optional(),
     children: Joi.number().integer().min(0).max(10).optional(),
-    roomRate: Joi.number().decimal().min(0).optional(),
-    totalAmount: Joi.number().decimal().min(0).optional(),
-    deposit: Joi.number().decimal().min(0).optional(),
+    roomRate: Joi.number().min(0).optional(),
+    totalAmount: Joi.number().min(0).optional(),
+    deposit: Joi.number().min(0).optional(),
     specialRequests: Joi.array().items(Joi.string()).optional(),
     notes: Joi.string().optional(),
     guaranteed: Joi.boolean().optional(),
     guaranteeType: Joi.string().valid('credit_card', 'deposit', 'corporate', 'travel_agent').optional()
   }),
-  
+
   // Room schemas
   createRoom: Joi.object({
     roomNumber: Joi.string().min(1).max(20).required(),
@@ -150,8 +150,8 @@ const schemas = {
       twinBeds: Joi.number().integer().min(0).default(0),
       sofaBeds: Joi.number().integer().min(0).default(0)
     }).required(),
-    basePrice: Joi.number().decimal().min(0).required(),
-    size: Joi.number().decimal().min(0).optional(),
+    basePrice: Joi.number().min(0).required(),
+    size: Joi.number().min(0).optional(),
     smokingAllowed: Joi.boolean().default(false),
     petFriendly: Joi.boolean().default(false),
     accessible: Joi.boolean().default(false),
@@ -176,7 +176,7 @@ const schemas = {
       hairDryer: Joi.boolean().default(true)
     }).optional()
   }),
-  
+
   updateRoom: Joi.object({
     roomType: Joi.string().valid('standard', 'deluxe', 'suite', 'executive_suite', 'presidential_suite', 'family_room', 'connecting_room').optional(),
     floor: Joi.number().integer().min(1).optional(),
@@ -188,10 +188,10 @@ const schemas = {
       twinBeds: Joi.number().integer().min(0).default(0),
       sofaBeds: Joi.number().integer().min(0).default(0)
     }).optional(),
-    basePrice: Joi.number().decimal().min(0).optional(),
-    currentPrice: Joi.number().decimal().min(0).optional(),
+    basePrice: Joi.number().min(0).optional(),
+    currentPrice: Joi.number().min(0).optional(),
     status: Joi.string().valid('available', 'occupied', 'maintenance', 'out_of_order', 'cleaning', 'reserved').optional(),
-    size: Joi.number().decimal().min(0).optional(),
+    size: Joi.number().min(0).optional(),
     smokingAllowed: Joi.boolean().optional(),
     petFriendly: Joi.boolean().optional(),
     accessible: Joi.boolean().optional(),
@@ -216,7 +216,7 @@ const schemas = {
       hairDryer: Joi.boolean().optional()
     }).optional()
   }),
-  
+
   // Query parameter schemas
   pagination: Joi.object({
     page: Joi.number().integer().min(1).default(1),
@@ -224,7 +224,7 @@ const schemas = {
     sortBy: Joi.string().optional(),
     sortOrder: Joi.string().valid('asc', 'desc').default('desc')
   }),
-  
+
   dateRange: Joi.object({
     startDate: Joi.date().iso().optional(),
     endDate: Joi.date().iso().min(Joi.ref('startDate')).optional()

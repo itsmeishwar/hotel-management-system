@@ -9,7 +9,7 @@ class FrontDeskController {
     try {
       const today = moment().format('YYYY-MM-DD');
       const tomorrow = moment().add(1, 'day').format('YYYY-MM-DD');
-      
+
       // Today's check-ins
       const todayCheckIns = await Reservation.findAll({
         where: {
@@ -30,7 +30,7 @@ class FrontDeskController {
         ],
         order: [['createdAt', 'ASC']]
       });
-      
+
       // Today's check-outs
       const todayCheckOuts = await Reservation.findAll({
         where: {
@@ -51,7 +51,7 @@ class FrontDeskController {
         ],
         order: [['createdAt', 'ASC']]
       });
-      
+
       // Tomorrow's check-ins
       const tomorrowCheckIns = await Reservation.findAll({
         where: {
@@ -72,7 +72,7 @@ class FrontDeskController {
         ],
         order: [['createdAt', 'ASC']]
       });
-      
+
       // Available rooms
       const availableRooms = await Room.findAll({
         where: {
@@ -82,7 +82,7 @@ class FrontDeskController {
         order: [['roomNumber', 'ASC']],
         limit: 10
       });
-      
+
       // Pending tasks (housekeeping, maintenance)
       const pendingTasks = await Housekeeping.findAll({
         where: {
@@ -99,7 +99,7 @@ class FrontDeskController {
         order: [['priority', 'DESC'], ['scheduledDate', 'ASC']],
         limit: 10
       });
-      
+
       // Recent activities
       const recentActivities = await Reservation.findAll({
         where: {
@@ -120,7 +120,7 @@ class FrontDeskController {
         order: [['updatedAt', 'DESC']],
         limit: 10
       });
-      
+
       // Statistics
       const stats = {
         totalGuests: await Guest.count({ where: { blacklisted: false } }),
@@ -130,7 +130,7 @@ class FrontDeskController {
         todayCheckIns: todayCheckIns.length,
         todayCheckOuts: todayCheckOuts.length
       };
-      
+
       res.json({
         success: true,
         data: {
@@ -151,12 +151,12 @@ class FrontDeskController {
       });
     }
   }
-  
+
   // Quick check-in (with minimal validation for speed)
   async quickCheckIn(req, res) {
     try {
       const { reservationId, paymentMethod, amountPaid } = req.body;
-      
+
       const reservation = await Reservation.findByPk(reservationId, {
         include: [
           {
@@ -169,21 +169,21 @@ class FrontDeskController {
           }
         ]
       });
-      
+
       if (!reservation) {
         return res.status(404).json({
           success: false,
           message: 'Reservation not found'
         });
       }
-      
+
       if (reservation.status !== 'confirmed') {
         return res.status(400).json({
           success: false,
           message: 'Only confirmed reservations can be checked in'
         });
       }
-      
+
       // Update reservation
       await reservation.update({
         status: 'checked_in',
@@ -191,18 +191,18 @@ class FrontDeskController {
         amountPaid: (reservation.amountPaid || 0) + (amountPaid || 0),
         lastModifiedBy: req.user.id
       });
-      
+
       // Update room status
       await Room.update(
         { status: 'occupied' },
         { where: { id: reservation.roomId } }
       );
-      
+
       // Create or update billing record
       let billing = await Billing.findOne({
         where: { reservationId }
       });
-      
+
       if (!billing) {
         billing = await Billing.create({
           reservationId,
@@ -229,13 +229,13 @@ class FrontDeskController {
           paidDate: (billing.amountPaid + (amountPaid || 0)) >= billing.totalAmount ? new Date() : null
         });
       }
-      
+
       // Update guest statistics
       await Guest.increment(
         { totalStays: 1 },
         { where: { id: reservation.guestId } }
       );
-      
+
       res.json({
         success: true,
         message: 'Quick check-in completed successfully',
@@ -252,12 +252,12 @@ class FrontDeskController {
       });
     }
   }
-  
+
   // Quick check-out
   async quickCheckOut(req, res) {
     try {
       const { reservationId, finalCharges, paymentMethod, amountPaid } = req.body;
-      
+
       const reservation = await Reservation.findByPk(reservationId, {
         include: [
           {
@@ -266,37 +266,37 @@ class FrontDeskController {
           }
         ]
       });
-      
+
       if (!reservation) {
         return res.status(404).json({
           success: false,
           message: 'Reservation not found'
         });
       }
-      
+
       if (reservation.status !== 'checked_in') {
         return res.status(400).json({
           success: false,
           message: 'Only checked-in guests can be checked out'
         });
       }
-      
+
       // Update reservation
       await reservation.update({
         status: 'checked_out',
         actualCheckOut: new Date(),
         lastModifiedBy: req.user.id
       });
-      
+
       // Update room status to cleaning
       await Room.update(
         { status: 'cleaning' },
         { where: { id: reservation.roomId } }
       );
-      
+
       // Update billing with final charges
       let billing = reservation.billing;
-      
+
       if (!billing) {
         billing = await Billing.create({
           reservationId,
@@ -320,7 +320,7 @@ class FrontDeskController {
         const newTotalAmount = reservation.totalAmount + (finalCharges || 0);
         const newAmountPaid = (billing.amountPaid || 0) + (amountPaid || 0);
         const newBalance = newTotalAmount - newAmountPaid;
-        
+
         await billing.update({
           subtotal: billing.subtotal + (finalCharges || 0),
           totalAmount: newTotalAmount,
@@ -330,7 +330,7 @@ class FrontDeskController {
           paidDate: newBalance <= 0 ? new Date() : null
         });
       }
-      
+
       // Create housekeeping task for room cleaning
       await Housekeeping.create({
         roomId: reservation.roomId,
@@ -341,13 +341,13 @@ class FrontDeskController {
         createdBy: req.user.id,
         reservationId
       });
-      
+
       // Update guest revenue
       await Guest.increment(
         { totalRevenue: reservation.totalAmount + (finalCharges || 0) },
         { where: { id: reservation.guestId } }
-      });
-      
+      );
+
       res.json({
         success: true,
         message: 'Quick check-out completed successfully',
@@ -364,7 +364,7 @@ class FrontDeskController {
       });
     }
   }
-  
+
   // Process walk-in reservation
   async processWalkIn(req, res) {
     try {
@@ -378,7 +378,7 @@ class FrontDeskController {
         paymentMethod,
         amountPaid
       } = req.body;
-      
+
       // Create guest first
       let guest;
       if (guestData.email) {
@@ -391,7 +391,7 @@ class FrontDeskController {
       } else {
         guest = await Guest.create(guestData);
       }
-      
+
       // Find available room
       const availableRoom = await Room.findOne({
         where: {
@@ -400,21 +400,21 @@ class FrontDeskController {
           isActive: true
         }
       });
-      
+
       if (!availableRoom) {
         return res.status(400).json({
           success: false,
           message: 'No available rooms found for the specified type'
         });
       }
-      
+
       // Calculate total amount
       const nights = moment(checkOutDate).diff(moment(checkInDate), 'days');
       const totalAmount = availableRoom.currentPrice * nights;
-      
+
       // Generate confirmation number
       const confirmationNumber = `WALK${Date.now()}`;
-      
+
       // Create reservation
       const reservation = await Reservation.create({
         confirmationNumber,
@@ -433,10 +433,10 @@ class FrontDeskController {
         guaranteeType: amountPaid > 0 ? 'deposit' : null,
         createdBy: req.user.id
       });
-      
+
       // Update room status
       await availableRoom.update({ status: 'reserved' });
-      
+
       // Create billing record
       const billing = await Billing.create({
         reservationId: reservation.id,
@@ -455,7 +455,7 @@ class FrontDeskController {
         status: amountPaid >= totalAmount ? 'paid' : 'partial',
         createdBy: req.user.id
       });
-      
+
       // Fetch complete reservation with associations
       const createdReservation = await Reservation.findByPk(reservation.id, {
         include: [
@@ -471,7 +471,7 @@ class FrontDeskController {
           }
         ]
       });
-      
+
       res.status(201).json({
         success: true,
         message: 'Walk-in reservation processed successfully',
@@ -488,19 +488,19 @@ class FrontDeskController {
       });
     }
   }
-  
+
   // Get guest search results for front desk
   async searchGuestsQuick(req, res) {
     try {
       const { query } = req.query;
-      
+
       if (!query || query.length < 2) {
         return res.status(400).json({
           success: false,
           message: 'Search query must be at least 2 characters long'
         });
       }
-      
+
       const guests = await Guest.findAll({
         where: {
           [Op.and]: [
@@ -519,7 +519,7 @@ class FrontDeskController {
         order: [['totalStays', 'DESC'], ['totalRevenue', 'DESC']],
         attributes: ['id', 'firstName', 'lastName', 'email', 'phoneNumber', 'totalStays', 'totalRevenue', 'guestType']
       });
-      
+
       res.json({
         success: true,
         data: guests
@@ -532,12 +532,12 @@ class FrontDeskController {
       });
     }
   }
-  
+
   // Send check-in confirmation email
   async sendCheckInEmail(req, res) {
     try {
       const { reservationId } = req.params;
-      
+
       const reservation = await Reservation.findByPk(reservationId, {
         include: [
           {
@@ -550,21 +550,21 @@ class FrontDeskController {
           }
         ]
       });
-      
+
       if (!reservation) {
         return res.status(404).json({
           success: false,
           message: 'Reservation not found'
         });
       }
-      
+
       if (!reservation.guest.email) {
         return res.status(400).json({
           success: false,
           message: 'Guest email not available'
         });
       }
-      
+
       // Send email (implementation depends on your email service)
       const transporter = nodemailer.createTransporter({
         host: process.env.SMTP_HOST,
@@ -575,16 +575,16 @@ class FrontDeskController {
           pass: process.env.SMTP_PASS
         }
       });
-      
+
       const mailOptions = {
         from: process.env.SMTP_USER,
         to: reservation.guest.email,
         subject: `Check-in Confirmation - ${reservation.confirmationNumber}`,
         html: this.generateCheckInEmailTemplate(reservation)
       };
-      
+
       await transporter.sendMail(mailOptions);
-      
+
       res.json({
         success: true,
         message: 'Check-in confirmation email sent successfully'
@@ -597,7 +597,7 @@ class FrontDeskController {
       });
     }
   }
-  
+
   // Helper method to generate check-in email template
   generateCheckInEmailTemplate(reservation) {
     return `
