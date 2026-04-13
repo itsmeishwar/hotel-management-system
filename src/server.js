@@ -12,6 +12,8 @@ const reservationRoutes = require('./routes/reservations');
 const roomRoutes = require('./routes/rooms');
 const frontDeskRoutes = require('./routes/frontdesk');
 const housekeepingRoutes = require('./routes/housekeeping');
+const billingRoutes = require('./routes/billing');
+const reportsRoutes = require('./routes/reports');
 
 const app = express();
 
@@ -63,6 +65,8 @@ app.use('/api/v1/reservations', reservationRoutes);
 app.use('/api/v1/rooms', roomRoutes);
 app.use('/api/v1/frontdesk', frontDeskRoutes);
 app.use('/api/v1/housekeeping', housekeepingRoutes);
+app.use('/api/v1/billing', billingRoutes);
+app.use('/api/v1/reports', reportsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

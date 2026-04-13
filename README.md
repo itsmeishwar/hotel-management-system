@@ -158,6 +158,39 @@ All API endpoints require JWT authentication except:
 - `PUT /rooms/:id/status` - Update room status
 - `GET /rooms/:id/history` - Room history
 
+#### Front Desk
+- `GET /frontdesk/dashboard` - Front desk dashboard
+- `POST /frontdesk/quick-checkin` - Quick check-in
+- `POST /frontdesk/quick-checkout` - Quick check-out
+- `POST /frontdesk/walk-in` - Process walk-in
+- `GET /frontdesk/search-guests` - Quick guest search
+
+#### Housekeeping
+- `GET /housekeeping` - List all tasks
+- `POST /housekeeping` - Create task
+- `GET /housekeeping/dashboard` - Housekeeping dashboard
+- `GET /housekeeping/report` - Housekeeping report
+- `POST /housekeeping/assign` - Assign tasks to staff
+- `POST /housekeeping/:id/inspect` - Inspect completed task
+
+#### Billing & Finance
+- `GET /billing` - List invoices
+- `POST /billing` - Create invoice
+- `GET /billing/summary` - Financial summary
+- `GET /billing/overdue` - Overdue invoices
+- `GET /billing/:id` - Get invoice details
+- `PUT /billing/:id` - Update invoice
+- `POST /billing/:id/pay` - Record payment
+- `POST /billing/:id/cancel` - Cancel invoice
+- `POST /billing/:id/refund` - Process refund
+
+#### Reports
+- `GET /reports/dashboard` - Executive KPI dashboard
+- `GET /reports/occupancy` - Daily occupancy & RevPAR
+- `GET /reports/revenue` - Revenue by day/week/month
+- `GET /reports/guests` - Guest statistics
+- `GET /reports/housekeeping` - Housekeeping performance
+
 ## 🧪 Testing
 
 ```bash
@@ -238,11 +271,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] Reservation system
 - [x] Room management
 
-### Phase 2 (Months 3-6) - Operations
-- [ ] Front desk operations
-- [ ] Housekeeping management
-- [ ] Billing and finance
-- [ ] Basic reporting
+### Phase 2 (Months 3-6) - Operations ✅ COMPLETE
+- [x] Front desk operations (dashboard, quick check-in/out, walk-ins)
+- [x] Housekeeping management (tasks, assignment, inspection, reporting)
+- [x] Billing and finance (invoices, payments, refunds, overdue tracking)
+- [x] Basic reporting (occupancy, revenue, guest stats, KPI dashboard)
 
 ### Phase 3 (Months 6-9) - Advanced Features
 - [ ] Dynamic pricing
