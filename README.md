@@ -51,7 +51,8 @@ npm run migrate
 # Seed database with sample data
 npm run seed
 
-
+# Start development server
+npm run dev
 ```
 
 ### Environment Variables
