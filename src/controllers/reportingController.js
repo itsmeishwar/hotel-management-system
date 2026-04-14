@@ -1,3 +1,7 @@
+// this is the reporting controller file
+// where i will write the code for the reporting
+
+
 const { Reservation, Guest, Room, Billing, Housekeeping, User } = require('../models');
 const { Op, fn, col, literal } = require('sequelize');
 const moment = require('moment');
