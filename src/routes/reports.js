@@ -1,3 +1,6 @@
+
+// this is the reporting routes file
+
 const express = require('express');
 const router = express.Router();
 const reportingController = require('../controllers/reportingController');
@@ -21,3 +24,5 @@ router.get('/guests',       reportingController.getGuestReport);
 router.get('/housekeeping', reportingController.getHousekeepingReport);
 
 module.exports = router;
+
+
