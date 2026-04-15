@@ -5,7 +5,8 @@ const { Op } = require('sequelize');
 const moment = require('moment');
 
 class BillingController {
-  // ─── List / Search ──────────────────────────────────────────────────────────
+  // ─── List / Search ──────────────
+  // this is the list / search function
 
   async getInvoices(req, res) {
     try {
