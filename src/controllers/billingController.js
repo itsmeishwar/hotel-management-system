@@ -69,6 +69,7 @@ class BillingController {
       res.status(500).json({ success: false, message: 'Server error while fetching invoices' });
     }
   }
+  //ends list / search function
 
   // ─── Get single ─────────────────────────────────────────────────────────────
 
