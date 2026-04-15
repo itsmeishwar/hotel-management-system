@@ -101,6 +101,7 @@ class BillingController {
       res.status(500).json({ success: false, message: 'Server error while fetching invoice' });
     }
   }
+  // ends get invoice by id function
 
   // ─── Create invoice ──────────────────────────────────────────────────────────
 
