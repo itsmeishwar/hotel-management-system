@@ -95,6 +95,7 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
+// this is the server start function
     // Test database connection
     await sequelize.authenticate();
     console.log('Database connection established successfully.');
