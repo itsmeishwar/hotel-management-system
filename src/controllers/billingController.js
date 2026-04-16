@@ -1,5 +1,5 @@
 // this is the billing controller file
-
+// this is the billing controller file
 const { Billing, Reservation, Guest, Room } = require('../models');
 const { Op } = require('sequelize');
 const moment = require('moment');
