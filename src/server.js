@@ -6,7 +6,7 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const { sequelize } = require('./models');
-
+// this is the server file of 
 
 const authRoutes = require('./routes/auth');
 const guestRoutes = require('./routes/guests');
