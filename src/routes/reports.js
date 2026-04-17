@@ -24,5 +24,5 @@ router.get('/guests',       reportingController.getGuestReport);
 router.get('/housekeeping', reportingController.getHousekeepingReport);
 
 module.exports = router;
-
+// this is the end of the reporting routes file
 
