@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const { sequelize } = require('./models');
 
-// Import 
+
 const authRoutes = require('./routes/auth');
 const guestRoutes = require('./routes/guests');
 const reservationRoutes = require('./routes/reservations');
