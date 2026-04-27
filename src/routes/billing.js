@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const billingController = require('../controllers/billingController');
 const { auth, authorize, checkPermission } = require('../middleware/auth');
-
+// this is the billing routes file
 
 router.use(auth);
 
