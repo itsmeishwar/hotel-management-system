@@ -5,7 +5,7 @@ const router = express.Router();
 const billingController = require('../controllers/billingController');
 const { auth, authorize, checkPermission } = require('../middleware/auth');
 
-// All billing routes require authentication
+
 router.use(auth);
 
 // ─── Invoice CRUD ──────────────────────────────────────────────────────────────
