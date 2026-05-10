@@ -33,3 +33,4 @@ router.post('/:id/cancel', authorize('admin', 'management', 'front_desk'), billi
 router.post('/:id/refund', authorize('admin', 'management'),         billingController.processRefund);
 
 module.exports = router;
+// this is the billing routes file.
