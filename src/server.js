@@ -22,7 +22,7 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-// this is the security middleware of 
+
 
 // CORS configuration
 app.use(cors({
