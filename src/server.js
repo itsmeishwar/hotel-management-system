@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const path = require('path');
 require('dotenv').config();
 
 const { sequelize } = require('./models');
@@ -71,6 +72,16 @@ app.use('/api/v1/frontdesk', frontDeskRoutes);
 app.use('/api/v1/housekeeping', housekeepingRoutes);
 app.use('/api/v1/billing', billingRoutes);
 app.use('/api/v1/reports', reportsRoutes);
+
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const clientDist = path.join(__dirname, '..', 'client', 'dist');
+  app.use(express.static(clientDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 // 404 handler
 app.use('*', (req, res) => {

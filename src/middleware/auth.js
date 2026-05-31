@@ -94,8 +94,8 @@ const checkPermission = (permission) => {
     const resource = permissionParts[0];
     const action = permissionParts[1];
     
-    if (userPermissions[resource] && 
-        (userPermissions[resource].includes(action) || 
+    if (userPermissions[resource] && Array.isArray(userPermissions[resource]) &&
+        (userPermissions[resource].includes(action) ||
          userPermissions[resource].includes('all'))) {
       return next();
     }

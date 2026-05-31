@@ -65,6 +65,7 @@ async function seedUsers() {
       permissions: {
         reservations: ['read', 'write', 'delete'],
         guests: ['read', 'write'],
+        rooms: ['read'],
         billing: ['read', 'write'],
         checkin: true,
         checkout: true
